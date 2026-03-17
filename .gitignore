@@ -1,0 +1,17 @@
+# Python 관련 캐시 
+__pycache__/
+*.py[cod]
+
+# 운영체제 생성 파일 
+.DS_Store
+
+# 대용량 데이터 폴더 
+data/
+train_images/
+train_annotations/
+test_images/
+
+# 압축 파일들
+*.zip
+*.tar
+*.gz

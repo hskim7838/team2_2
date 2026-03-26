@@ -47,8 +47,9 @@ def setup_distributed(print_rank: int=0, print_method: str='builtin', seed: int=
         LOCAL_RANK = int(os.getenv('LOCAL_RANK', -1))
         WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
 
+        os.environ.setdefault('USE_LIBUV', '0')
         # torch.distributed.init_process_group(backend=backend, init_method='env://')
-        torch.distributed.init_process_group(init_method='env://', timeout=timedelta(seconds=72000))
+        torch.distributed.init_process_group(backend='gloo', init_method='env://', timeout=timedelta(seconds=72000))
         torch.distributed.barrier()
 
         rank = torch.distributed.get_rank()

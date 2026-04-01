@@ -1,0 +1,25 @@
+# 1. Python 관련 캐시 (현재 폴더 및 하위 모든 곳)
+__pycache__/
+*.py[cod]
+
+# 2. 운영체제 생성 파일
+.DS_Store
+Thumbs.db
+
+# 3. 데이터셋 및 소스 폴더 (박도원 폴더 내의 해당 폴더들만 무시)
+ai09-level1-project/
+yolo_dataset/
+backgrounds_images/
+pill_crops_transparent/
+
+# 4. 임시 확인용 결과물
+bbox_check/
+
+# 5. 모델 가중치 및 체크포인트 (대용량 파일 업로드 방지)
+*.pt
+*.pth
+
+# 6. 기타 압축 파일
+*.zip
+*.tar
+*.gz

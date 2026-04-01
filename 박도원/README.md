@@ -16,7 +16,8 @@
 │   └── pill_full_distribution.png  # 전체 데이터 클래스 분포도
 ├── models/                  # 모델 학습코드
 │   ├── rt-detr-l.ipynb             # RT-DETR-L 실험 코드
-│   ├── YOLO11m.ipynb               # 코드 추가 예정
-│   └── WBF_csv.ipynb               # 코드 추가 예정
+│   ├── YOLO11m.ipynb               # YOLO11m 실험 코드 + 합성 데이터 추가
+│   ├── YOLOv12.ipynb               # YOLO12n 실험 코드
+│   └── WBF_csv.ipynb               # WBF-RT-DETRv4-x + YOLO11m
 ├── .gitignore             
 └── README.md                # v

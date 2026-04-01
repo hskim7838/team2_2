@@ -1,17 +1,25 @@
-# Python 관련 캐시 
-__pycache__/
-*.py[cod]
+# 1. Python 관련 캐시
+**/__pycache__/
+**/*.py[cod]
 
-# 운영체제 생성 파일 
-.DS_Store
+# 2. 운영체제 생성 파일
+**/.DS_Store
+**/Thumbs.db
 
-# 대용량 데이터 폴더 
-data/
-train_images/
-train_annotations/
-test_images/
+# 3. 데이터셋 폴더 (어디에 있든 무시)
+**/ai09-level1-project/
+**/yolo_dataset/
+**/backgrounds_images/
+**/pill_crops_transparent/
 
-# 압축 파일들
-*.zip
-*.tar
-*.gz
+# 4. 임시 확인용 결과물
+**/bbox_check/
+
+# 5. 모델 가중치 (전체 경로에서 무시)
+**/*.pt
+**/*.pth
+
+# 6. 기타 압축 파일
+**/*.zip
+**/*.tar
+**/*.gz

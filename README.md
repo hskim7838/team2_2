@@ -66,6 +66,6 @@
 ---
 
 ## 📄 보고서
-[프로젝트 보고서 바로가기]([URL](https://drive.google.com/file/d/1OFD0tIfl0BREgKzfmaj97B86ls6bmWWg/view?usp=sharing))
-[팀 스페이스 (협업 일지) 바로가기]([URL]([https://drive.google.com/file/d/1OFD0tIfl0BREgKzfmaj97B86ls6bmWWg/view?usp=sharing](https://www.notion.so/hyeonsukim/2-2-32ef5734f6cd8046a9e9db90f442b8de?source=copy_link)))
+- [프로젝트 보고서 바로가기](https://drive.google.com/file/d/1OFD0tIfl0BREgKzfmaj97B86ls6bmWWg/view?usp=sharing)
+- [팀 스페이스 (협업 일지) 바로가기](https://www.notion.so/hyeonsukim/2-2-32ef5734f6cd8046a9e9db90f442b8de?source=copy_link)
 ---

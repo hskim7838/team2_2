@@ -48,6 +48,11 @@
 | RT-DETRv4-L | EfficientNet-B4 | 0.9064 |
 | RT-DETRv4-L | ConvNeXt | **0.9081** |
 
+## 최종 결과
+| Ensemble 1 | Ensemble 2 |  mAP@[0.75:0.95] |
+|----------|------------|----------------|
+| RT-DETRv4-L(↑) | YOLOv11-M(↓) | **0.9753** |
+
 ---
 
 ## 👥 팀원 소개

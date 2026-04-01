@@ -14,8 +14,9 @@
 
 ---
 
-## 🛠️ 사용 기술
+## 🛠️ 실험 기술
 - **Model**: RT-DETRv4-X, YOLO v11
+- **Resize**: 640, 1024, etc.
 - **Augmentation**: Simple Copy-Paste, Image Inpainting, Mosaic
 - **Post-processing**: WBF (Weighted Boxes Fusion)
 - **Ensemble**: RT-DETRv4-X + YOLO v11-M

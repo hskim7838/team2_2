@@ -1,0 +1,245 @@
+Augmentation : epoch 기준
+
+0~3	       기본 증강만 (아래 표)
+4~29       	Mosaic(50%) + Mixup(50%) + 기본 증강
+29~50	Mosaic(50%) + 기본 증강 (Mixup 종료)
+50~58	no-aug (기본 증강만, Mosaic 종료)
+
+기본 증강 (항상 적용)
+
+RandomPhotometricDistort  (p=0.5) — 밝기/대비/채도 변환
+RandomZoomOut             — 이미지 축소 후 패딩
+RandomIoUCrop             (p=0.8) — IoU 기반 랜덤 크롭
+SanitizeBoundingBoxes     — 잘린 bbox 정리
+RandomHorizontalFlip      — 좌우 반전
+Resize → 640×640
+
+특수 증강
+Mosaic: 이미지 4장 합성 (320px 기준)
+Mixup: 두 이미지를 alpha 블렌딩으로 합성
+
+
+Best : 45 epoch
+Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.977
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.996
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.977
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.981
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.985
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.985
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.985
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.996
+
+conf threshold = 0.5 score : 0.94471
+
+conf threshold = 0.3 score : 0.95808
+
+conf threshold = 0.2 score : 0.96052
+
+conf threshold = 0.1 score : 0.96833
+
+conf threshold = 0.05 score : 0.96833
+
+conf threshold = 0.08 score : 0.96833
+
+0.05에서 추가 탐지가 생겨도 점수 향상이 없다는 건 0.05~0.1 사이 탐지들이 false positive라는 의미입니다. 0.1을 최종 threshold로 확정하면 됩니다.
+
+---
+
+재학습
+
+해상도: 640×640 → 800×800
+Mosaic output_size: 320 → 400 (비율 유지)
+output_dir: rtv4_pill_800 (기존 결과 보존)
+
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.969
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.990
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.987
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.969
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.980
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.989
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.991
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.991
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets=100 ] = 1.000
+best_stat: {'epoch': 53, 'coco_eval_bbox': 0.9688856667196606
+
+Training time 1:16:45
+
+score : 0.94813
+
+점수가 떨어진 원인
+
+학습 로그를 보면
+
+"train_loss_distill": 0.0
+"train_loss_distill_aux_0": 0.0
+...모든 distill loss가 0
+
+DINOv3 teacher model의 distillation이 800px 학습 내내 작동을 안했습니다. RT-DETRv4의 핵심 강점이 distillation인데, 이게 없으면 그냥 평범한 RT-DETR 수준으로 떨어집니다. 아마 tensor size mismatch를 우회하는 과정에서 distillation이 완전히 꺼진 것 같아 보입니다.
+
+---
+
+재학습
+
+epoch 58 에서 72로
+
+0~3	기본 증강만
+4~28	Mosaic + MixUp + 기본 증강
+29~63	Mosaic + 기본 증강 (MixUp 종료)
+64~71	no-aug (기본 증강만, Mosaic 종료)
+
+Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.971
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.993
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.988
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.971
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.979
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.984
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.986
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.986
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.996
+best_stat: {'epoch': 64, 'coco_eval_bbox': 0.9705529414716413}
+Training time 2:31:55
+해상도: 640×640
+
+score : 0.95880
+
+val AP는 v2가 더 높은데 Kaggle에서 오히려 크게 떨어진 건 과적합 가능성이 높아 보입니다. 72 에폭으로 늘리면서 test 분포에 대한 일반화 성능이 낮아진 것 같습니다.
+
+---
+
+copy-paste 증강 적용
+
+원리:
+
+이미지 A에서 객체(알약) 영역을 bbox 기준으로 잘라냄
+이미지 B의 랜덤한 위치에 붙여넣음
+annotation도 자동으로 업데이트
+
+학습할 이미지 양이 늘어남에 따라 epoch 수를 늘림.
+
+이미지 A                이미지 B               결과
+[알드린정 1개]    +    [다른 알약들]    →    [다른 알약들 + 알드린정]
+(희귀 클래스)                                 (새 annotation 자동 생성)
+
+Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.984
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.995
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.984
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.987
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.987
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.987
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.987
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.996
+best_stat: {'epoch': 69, 'coco_eval_bbox': 0.9838467426665233}
+Training time 4:31:03
+
+score : 0.93170 (conf threshold = 0.5)
+
+H-Flip TTA
+
+score : 0.95609 (conf threshold = 0.5)
+
+score : 0.97512 (conf threshold = 0.1)
+
+---
+
+optimizer : AdamW 에서 Adan 으로
+
+betas: [0.9, 0.999] → [0.98, 0.92, 0.99] (Adan 기본값, 3개 momentum 항)
+
+Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.981
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.996
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.981
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.982
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.987
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.987
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.987
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.996
+best_stat: {'epoch': 66, 'coco_eval_bbox': 0.980847476041143}
+
+Training time 5:08:41
+
+val AP가 더 떨어졌음. 이건 제출하지 않는게 좋아보임.
+
+---
+
+optimizer : Adan 에서 AdamW로
+
+betas : 기존으로 되돌림
+
+추가한 증강
+RandomRotate(±15°)
+배경 교체 증강
+
+Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.865
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.986
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.865
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.872
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.885
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.918
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.918
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.991
+best_stat: {'epoch': 69, 'coco_eval_bbox': 0.8650221316725197}
+
+---
+
+RandomRotate 증강 삭제.
+
+회전 후 axis-aligned bbox 팽창이 IoU 0.80~0.95 구간을 완전히 망가뜨린 것으로 보임.
+
+cd C:\Users\ASUS\Downloads\RT-DETRv4
+set PYTHONUTF8=1
+set USE_LIBUV=0
+python train.py -c configs/rtv4/rtv4_hgnetv2_x_pill_640_v6.yml
+
+Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.977
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.993
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.977
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.982
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.986
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.991
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.991
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.996
+best_stat: {'epoch': 66, 'coco_eval_bbox': 0.9772209164614986}
+Training time 5:48:56
+
+score : 0.96926
+

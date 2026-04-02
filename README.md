@@ -67,7 +67,8 @@
 ---
 
 ## 📄 보고서
-- [프로젝트 보고서 바로가기](https://drive.google.com/file/d/1OFD0tIfl0BREgKzfmaj97B86ls6bmWWg/view?usp=sharing)
+- [프로젝트 보고서](https://drive.google.com/file/d/1OFD0tIfl0BREgKzfmaj97B86ls6bmWWg/view?usp=sharing)
+- [팀 스페이스 (Notion)](https://www.notion.so/hyeonsukim/2-2-32ef5734f6cd8046a9e9db90f442b8de?source=copy_link)
 - [협업 일지 - 김영성](https://velog.io/@csd1345/series/%EC%B4%88%EA%B8%89%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%98%91%EC%97%85%EC%9D%BC%EC%A7%80)
 - [협업 일지 - 김현수](https://www.notion.so/hyeonsukim/32ef5734f6cd81019835dc6e178b2b95?source=copy_link)
 - [협업 일지 - 박도원](https://www.notion.so/325c44689b4380c2a40ad979a2b8109f?source=copy_link)
